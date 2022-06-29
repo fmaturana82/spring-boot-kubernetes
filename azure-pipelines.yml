@@ -36,6 +36,7 @@ jobs:
       publishLocation: 'Container'
 
   #- script: "mkdir -p target; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
+  #- script: "get; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
   #  displayName:  Se mueve jar a carpeta raiz
 ##
 ##
@@ -58,15 +59,15 @@ jobs:
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
     displayName: 'Show-[Pipeline.Workspace] for debugging'
 
-  - pwsh: Get-ChildItem *.* -Recurse -Path /home/vsts/work/1/target | Select-Object UnixMode, Length, Name
-    #- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
-    displayName: 'Show-[target] for debugging'
+  #- pwsh: Get-ChildItem *.* -Recurse -Path /home/vsts/work/1/target | Select-Object UnixMode, Length, Name
+    ##- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
+  #  displayName: 'Show-[target] for debugging'
 
-  - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
-    displayName: 'Show1-[appJar] for debugging'
+  #- pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
+  #  displayName: 'Show1-[appJar] for debugging'
 
-  - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory)/target | Select-Object UnixMode, Length, Name
-    displayName: 'Show2-[appJar] for debugging'
+  #- pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory)/target | Select-Object UnixMode, Length, Name
+  #  displayName: 'Show2-[appJar] for debugging'
 
   - task: PowerShell@2
     displayName: Print-[Build.ArtifactStagingDirectory]
@@ -79,14 +80,14 @@ jobs:
 ##
 ##
 ##
-#- job: horusec
-#  workspace:
-#    clean: all
-#  displayName: Horusec
-#  steps:
-#    - script: |
-#        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
-#        horusec start -p ./src  
+- job: horusec
+  workspace:
+    clean: all
+  displayName: Horusec
+  steps:
+    - script: |
+        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
+        horusec start -p ./src  
               
 - job: sonar
   workspace:
@@ -113,46 +114,46 @@ jobs:
  # #    sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
  # #  displayName: 'Analyze current Branch'
 
- # - task: Maven@3    
- #   inputs:
- #     mavenPomFile: 'pom.xml'
- #     publishJUnitResults: true
- #     testResultsFiles: '**/surefire-reports/TEST-*.xml'
- #     javaHomeOption: 'JDKVersion'
- #     jdkVersionOption: '1.11'
- #     mavenVersionOption: 'Default'
- #     mavenAuthenticateFeed: false
- #     effectivePomSkip: false
- #     sonarQubeRunAnalysis: true
- #     sqMavenPluginVersionChoice: 'latest'
- #     checkStyleRunAnalysis: true
- #     pmdRunAnalysis: true
- #     findBugsRunAnalysis: true
+  - task: Maven@3    
+    inputs:
+      mavenPomFile: 'pom.xml'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.11'
+      mavenVersionOption: 'Default'
+      mavenAuthenticateFeed: false
+      effectivePomSkip: false
+      sonarQubeRunAnalysis: true
+      sqMavenPluginVersionChoice: 'latest'
+      checkStyleRunAnalysis: true
+      pmdRunAnalysis: true
+      findBugsRunAnalysis: true
 
-  #- task: SonarCloudPublish@1
-  #  inputs:
-  #    pollingTimeoutSec: '300'
-  #  displayName: 'Publish Analysis Results'
-  #- task: sonarcloud-buildbreaker@2
-  #  inputs:
-  #    SonarCloud: 'Custom-SonarServiceConnection'
-  #    organization: 'famaturanai'
+  - task: SonarCloudPublish@1
+    inputs:
+      pollingTimeoutSec: '300'
+    displayName: 'Publish Analysis Results'
+  - task: sonarcloud-buildbreaker@2
+    inputs:
+      SonarCloud: 'Custom-SonarServiceConnection'
+      organization: 'famaturanai'
 
-#- job: sca
-#  steps:
-#  - task: dependency-check-build-task@6
-#    inputs:
-#      projectName: 'spring-boot-kubernetes'
-#      #scanPath: '$(Pipeline.Workspace)'
-#      #scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
-#      scanPath: '**/target/spring-boot-kubernetes-*.jar'
-#      #failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
-#      format: 'HTML'
-#      enableVerbose: false
-#      enableExperimental: true # Enable experimental file type analyzers
-#      #additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
-#      #dependencyCheckVersion: '6.1.6'
-#    displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
+- job: sca
+  steps:
+  - task: dependency-check-build-task@6
+    inputs:
+      projectName: 'spring-boot-kubernetes'
+      #scanPath: '$(Pipeline.Workspace)'
+      #scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
+      scanPath: 'home/vsts/work/**/*.jar'
+      #failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
+      format: 'HTML'
+      enableVerbose: false
+      enableExperimental: true # Enable experimental file type analyzers
+      #additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
+      #dependencyCheckVersion: '6.1.6'
+    displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
 
  # - task: PublishTestResults@2
  #   inputs:
