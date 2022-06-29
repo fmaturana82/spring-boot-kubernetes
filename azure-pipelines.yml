@@ -21,28 +21,6 @@ jobs:
       mavenOptions: '-Xmx1024m'
       effectivePomSkip: false
       sonarQubeRunAnalysis: false
-  
-  - task: PowerShell@2
-    displayName: Print-[Build.SourcesDirectory]
-    inputs:
-      targetType: 'inline'
-      script: 'Write-Host "Build.SourcesDirectory ---> [$(Build.SourcesDirectory)]"' # prints empty
-  
-  - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.SourcesDirectory) | Select-Object UnixMode, Length, Name
-    displayName: 'Show-[Build.SourcesDirectory] for debugging'
-
-  - task: PowerShell@2
-    displayName: Print-[Pipeline.Workspace]
-    inputs:
-      targetType: 'inline'
-      script: 'Write-Host "Pipeline.Workspacey ---> [$(Pipeline.Workspace)]"' # prints empty
-  
-  - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
-    displayName: 'Show-[Pipeline.Workspace] for debugging'
-
-  - pwsh: Get-ChildItem *.* -Recurse -Path /home/vsts/work/1/target | Select-Object UnixMode, Length, Name
-  #- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
-    displayName: 'Show-[target] for debugging'
 
   - task: CopyFiles@2
     inputs:
@@ -50,11 +28,39 @@ jobs:
       contents: |
         **/target/spring-boot-kubernetes-*.jar
       targetFolder: '$(Build.ArtifactStagingDirectory)'
+
   - task: PublishBuildArtifacts@1
     inputs:
-      pathToPublish: /run
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: appJar
-      #publishLocation: 'Container'
+      publishLocation: 'Container'
+
+  - script: "mkdir -p build/libs; mv $(Pipeline.Workspace)/appJar/build/libs/ build/; chmod -R 555 build/libs"
+    displayName:  Se mueve jar a carpeta raiz
+##
+##
+##
+  - task: PowerShell@2
+    displayName: Print-[Build.SourcesDirectory]
+    inputs:
+      targetType: 'inline'
+      script: 'Write-Host "Build.SourcesDirectory ---> [$(Build.SourcesDirectory)]"' # prints empty
+
+  - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.SourcesDirectory) | Select-Object UnixMode, Length, Name
+    displayName: 'Show-[Build.SourcesDirectory] for debugging'
+
+  - task: PowerShell@2
+    displayName: Print-[Pipeline.Workspace]
+      inputs:
+        targetType: 'inline'
+        script: 'Write-Host "Pipeline.Workspacey ---> [$(Pipeline.Workspace)]"' # prints empty
+
+  - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
+    displayName: 'Show-[Pipeline.Workspace] for debugging'
+
+  - pwsh: Get-ChildItem *.* -Recurse -Path /home/vsts/work/1/target | Select-Object UnixMode, Length, Name
+    #- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
+    displayName: 'Show-[target] for debugging'
 
   - pwsh: Get-ChildItem *.* -Recurse -Path (Build.ArtifactStagingDirectory | Select-Object UnixMode, Length, Name
     displayName: 'Show-[appJar] for debugging'
@@ -67,7 +73,9 @@ jobs:
   
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
     displayName: 'Show folder [Build.ArtifactStagingDirectory] for debugging'
-
+##
+##
+##
 #- job: horusec
 #  workspace:
 #    clean: all
