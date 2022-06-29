@@ -51,9 +51,9 @@ jobs:
 
   - task: PowerShell@2
     displayName: Print-[Pipeline.Workspace]
-      inputs:
-        targetType: 'inline'
-        script: 'Write-Host "Pipeline.Workspacey ---> [$(Pipeline.Workspace)]"' # prints empty
+    inputs:
+      targetType: 'inline'
+      script: 'Write-Host "Pipeline.Workspacey ---> [$(Pipeline.Workspace)]"' # prints empty
 
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
     displayName: 'Show-[Pipeline.Workspace] for debugging'
