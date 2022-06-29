@@ -35,8 +35,8 @@ jobs:
       artifactName: appJar
       publishLocation: 'Container'
 
-  - script: "mkdir -p target; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
-    displayName:  Se mueve jar a carpeta raiz
+  #- script: "mkdir -p target; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
+  #  displayName:  Se mueve jar a carpeta raiz
 ##
 ##
 ##
@@ -63,7 +63,10 @@ jobs:
     displayName: 'Show-[target] for debugging'
 
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
-    displayName: 'Show-[appJar] for debugging'
+    displayName: 'Show1-[appJar] for debugging'
+
+  - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory)/target | Select-Object UnixMode, Length, Name
+    displayName: 'Show2-[appJar] for debugging'
 
   - task: PowerShell@2
     displayName: Print-[Build.ArtifactStagingDirectory]
