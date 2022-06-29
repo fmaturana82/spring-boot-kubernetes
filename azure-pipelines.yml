@@ -10,7 +10,7 @@ jobs:
   - task: Maven@3
     inputs:
       mavenPomFile: 'pom.xml'
-      goals: 'compile'
+      goals: 'clean package -Dmaven.test.skip=true'
       publishJUnitResults: true
       options: '--quiet'
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
@@ -28,7 +28,7 @@ jobs:
       targetType: 'inline'
       script: 'Write-Host "Build.SourcesDirectory ---> [$(Build.SourcesDirectory)]"' # prints empty
   
-  - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.SourcesDirectory) | Select-Object UnixMode, Length, Name
+  - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.SourcesDirectory) -Recurse -Force | Select-Object UnixMode, Length, Name
     displayName: 'Show ALL [Build.SourcesDirectory] for debugging'
 
   - task: PowerShell@2
@@ -40,15 +40,15 @@ jobs:
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
     displayName: 'Show ALL [Pipeline.Workspace] for debugging'
 
-  #- pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace)/target | Select-Object UnixMode, Length, Name
+  - pwsh: Get-ChildItem *.* -Recurse -Path /home/vsts/work/1/target | Select-Object UnixMode, Length, Name
   #- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
-  #  displayName: 'Show folder [target] for debugging'
+    displayName: 'Show folder [target] for debugging'
 
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
       contents: |
-        **/build/libs/spring-boot-kubernetes-*.jar
+        **/target/spring-boot-kubernetes-*.jar
       targetFolder: '$(Build.ArtifactStagingDirectory)'
 
   
