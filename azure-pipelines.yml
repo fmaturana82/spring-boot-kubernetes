@@ -45,7 +45,17 @@ jobs:
       projectName: 'devsecops-v3'
     displayName: 'Preparing Sonarqube Environment'
 
-  - task: SonarCloudAnalyze@1
+  - task: Maven@3
+    inputs:
+      mavenPomFile: 'pom.xml'
+      goals: 'package'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.11'
+      jdkArchitectureOption: 'x64'
+      mavenOptions: '-Xmx1024m'
+      sonarQubeRunAnalysis: true
+      sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
+    displayName: 'Analyze current Branch'
 
   - task: SonarCloudPublish@1
     inputs:
