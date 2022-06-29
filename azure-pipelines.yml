@@ -10,7 +10,7 @@ jobs:
   - task: Maven@3
     inputs:
       mavenPomFile: 'pom.xml'
-      #goals: 'package'
+      goals: 'compile'
       publishJUnitResults: true
       options: '--quiet'
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
@@ -22,6 +22,28 @@ jobs:
       effectivePomSkip: false
       sonarQubeRunAnalysis: false
   
+  - task: PowerShell@2
+    displayName: Display Build.SourcesDirectory
+    inputs:
+      targetType: 'inline'
+      script: 'Write-Host "Build.SourcesDirectory ---> [$(Build.SourcesDirectory)]"' # prints empty
+  
+  - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.SourcesDirectory) | Select-Object UnixMode, Length, Name
+    displayName: 'Show ALL [Build.SourcesDirectory] for debugging'
+
+  - task: PowerShell@2
+    displayName: Display Pipeline.Workspace
+    inputs:
+      targetType: 'inline'
+      script: 'Write-Host "Build.SourcesDirectory ---> [$(Pipeline.Workspace)]"' # prints empty
+  
+  - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
+    displayName: 'Show ALL [Pipeline.Workspace] for debugging'
+
+  #- pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace)/target | Select-Object UnixMode, Length, Name
+  #- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
+  #  displayName: 'Show folder [target] for debugging'
+
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
@@ -29,19 +51,7 @@ jobs:
         **/build/libs/spring-boot-kubernetes-*.jar
       targetFolder: '$(Build.ArtifactStagingDirectory)'
 
-  - task: PowerShell@2
-    displayName: Display Build.SourcesDirectory
-    inputs:
-      targetType: 'inline'
-      script: 'Write-Host "Build.SourcesDirectory ---> [$(Build.SourcesDirectory)]"' # prints empty
   
-  - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
-    displayName: 'Show ALL folder for debugging'
-  
-  - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace)/target | Select-Object UnixMode, Length, Name
-  #- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
-    displayName: 'Show folder [target] for debugging'
-
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
@@ -54,16 +64,16 @@ jobs:
       script: 'Write-Host "Build.ArtifactStagingDirectory ---> [$(Build.ArtifactStagingDirectory)]"'
   
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
-    displayName: 'Show folder [$(Build.ArtifactStagingDirectory] for debugging'
+    displayName: 'Show folder [Build.ArtifactStagingDirectory] for debugging'
 
-- job: horusec
-  workspace:
-    clean: all
-  displayName: Horusec
-  steps:
-    - script: |
-        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
-        horusec start -p ./src  
+#- job: horusec
+#  workspace:
+#    clean: all
+#  displayName: Horusec
+#  steps:
+#    - script: |
+#        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
+#        horusec start -p ./src  
               
 - job: sonar
   workspace:
@@ -78,38 +88,38 @@ jobs:
       projectName: 'spring-boot-kubernetes'
     displayName: 'Preparing Sonarqube Environment'
 
-  #- task: Maven@3
-  #  inputs:
-  #    mavenPomFile: 'pom.xml'
-  #    goals: 'package'
-  #    javaHomeOption: 'JDKVersion'
-  #    jdkVersionOption: '1.11'
-  #    jdkArchitectureOption: 'x64'
-  #    mavenOptions: '-Xmx1024m'
-  #    sonarQubeRunAnalysis: true
-  #    sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
-  #  displayName: 'Analyze current Branch'
+ # #- task: Maven@3
+ # #  inputs:
+ # #    mavenPomFile: 'pom.xml'
+ # #    goals: 'package'
+ # #    javaHomeOption: 'JDKVersion'
+ # #    jdkVersionOption: '1.11'
+ # #    jdkArchitectureOption: 'x64'
+ # #    mavenOptions: '-Xmx1024m'
+ # #    sonarQubeRunAnalysis: true
+ # #    sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
+ # #  displayName: 'Analyze current Branch'
 
-  - task: Maven@3    
-    inputs:
-      mavenPomFile: 'pom.xml'
-      publishJUnitResults: true
-      testResultsFiles: '**/surefire-reports/TEST-*.xml'
-      javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '1.11'
-      mavenVersionOption: 'Default'
-      mavenAuthenticateFeed: false
-      effectivePomSkip: false
-      sonarQubeRunAnalysis: true
-      sqMavenPluginVersionChoice: 'latest'
-      checkStyleRunAnalysis: true
-      pmdRunAnalysis: true
-      findBugsRunAnalysis: true
+ # - task: Maven@3    
+ #   inputs:
+ #     mavenPomFile: 'pom.xml'
+ #     publishJUnitResults: true
+ #     testResultsFiles: '**/surefire-reports/TEST-*.xml'
+ #     javaHomeOption: 'JDKVersion'
+ #     jdkVersionOption: '1.11'
+ #     mavenVersionOption: 'Default'
+ #     mavenAuthenticateFeed: false
+ #     effectivePomSkip: false
+ #     sonarQubeRunAnalysis: true
+ #     sqMavenPluginVersionChoice: 'latest'
+ #     checkStyleRunAnalysis: true
+ #     pmdRunAnalysis: true
+ #     findBugsRunAnalysis: true
 
-  - task: SonarCloudPublish@1
-    inputs:
-      pollingTimeoutSec: '300'
-    displayName: 'Publish Analysis Results'
+ # - task: SonarCloudPublish@1
+ #   inputs:
+ #     pollingTimeoutSec: '300'
+ #   displayName: 'Publish Analysis Results'
 
   - task: sonarcloud-buildbreaker@2
     inputs:
