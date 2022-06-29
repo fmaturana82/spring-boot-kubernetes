@@ -31,7 +31,16 @@ jobs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: appJar
       publishLocation: 'Container'
-      
+
+- job: horusec
+  workspace:
+    clean: all
+  displayName: Horusec
+  steps:
+    - script: |
+        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
+        horusec start -p ./src  
+              
 - job: sonar
   workspace:
     clean: all
@@ -66,3 +75,11 @@ jobs:
     inputs:
       SonarCloud: 'Custom-SonarServiceConnection'
       organization: 'famaturanai'
+
+- job: sca
+  steps:
+  - task: dependency-check-build-task@6
+    inputs:
+      projectName: 'spring-boot-kubernetes'
+      scanPath: '$(Pipeline.Workspace)'
+      format: 'HTML'
