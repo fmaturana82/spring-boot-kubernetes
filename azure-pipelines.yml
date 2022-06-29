@@ -144,7 +144,7 @@ jobs:
   - task: dependency-check-build-task@6
     inputs:
       projectName: 'spring-boot-kubernetes'
-      scanPath: '$(Pipeline.Workspace)'
+      scanPath: '$(Build.ArtifactStagingDirectory)'
       #scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
       #scanPath: 'spring-boot-kubernetes-*.jar'
       #failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
