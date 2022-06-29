@@ -32,7 +32,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: app.jar
+      artifactName: app
       publishLocation: 'Container'
 
   #- script: "mkdir -p target; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
@@ -144,7 +144,8 @@ jobs:
   - task: dependency-check-build-task@6
     inputs:
       projectName: 'spring-boot-kubernetes'
-      scanPath: '$(Build.ArtifactStagingDirectory)'
+      #scanPath: '$(Build.ArtifactStagingDirectory)'
+      scanPath: '/home/vsts/work/**/*.jar'
       #scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
       #scanPath: 'spring-boot-kubernetes-*.jar'
       #failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
