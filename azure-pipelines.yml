@@ -23,16 +23,16 @@ jobs:
       sonarQubeRunAnalysis: false
   
   - task: PowerShell@2
-    displayName: Display Build.SourcesDirectory
+    displayName: Print Build.SourcesDirectory
     inputs:
       targetType: 'inline'
       script: 'Write-Host "Build.SourcesDirectory ---> [$(Build.SourcesDirectory)]"' # prints empty
   
-  - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.SourcesDirectory) -Recurse -Force | Select-Object UnixMode, Length, Name
+  - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.SourcesDirectory) | Select-Object UnixMode, Length, Name
     displayName: 'Show ALL [Build.SourcesDirectory] for debugging'
 
   - task: PowerShell@2
-    displayName: Display Pipeline.Workspace
+    displayName: Print Pipeline.Workspace
     inputs:
       targetType: 'inline'
       script: 'Write-Host "Build.SourcesDirectory ---> [$(Pipeline.Workspace)]"' # prints empty
@@ -58,7 +58,7 @@ jobs:
       artifactName: appJar
       publishLocation: 'Container'
   - task: PowerShell@2
-    displayName: Display Build.ArtifactStagingDirectory
+    displayName: Print Build.ArtifactStagingDirectory
     inputs:
       targetType: 'inline'
       script: 'Write-Host "Build.ArtifactStagingDirectory ---> [$(Build.ArtifactStagingDirectory)]"'
