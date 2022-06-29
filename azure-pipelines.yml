@@ -19,3 +19,15 @@ jobs:
       mavenOptions: '-Xmx1024m'
       sonarQubeRunAnalysis: false
       sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)'
+      contents: |
+        **/build/libs/spring-boot-kubernetes-*.jar
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: appJar
+      publishLocation: 'Container'
