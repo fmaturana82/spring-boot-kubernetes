@@ -25,6 +25,10 @@ jobs:
       contents: |
         **/build/libs/spring-boot-kubernetes-*.jar
       targetFolder: '$(Build.ArtifactStagingDirectory)'
+  
+  - script: |    
+      echo "ZZZZ"
+      echo '$(Build.SourcesDirectory)'
 
   - task: PublishBuildArtifacts@1
     inputs:
