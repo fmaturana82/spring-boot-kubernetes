@@ -32,7 +32,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: appJar
+      artifactName: app.jar
       publishLocation: 'Container'
 
   #- script: "mkdir -p target; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
@@ -144,13 +144,13 @@ jobs:
   - task: dependency-check-build-task@6
     inputs:
       projectName: 'spring-boot-kubernetes'
-      #scanPath: '$(Pipeline.Workspace)'
+      scanPath: '$(Pipeline.Workspace)'
       #scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
-      scanPath: 'home/vsts/work/**/*.jar'
+      #scanPath: 'spring-boot-kubernetes-*.jar'
       #failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
       format: 'HTML'
       enableVerbose: false
-      enableExperimental: true # Enable experimental file type analyzers
+      #enableExperimental: true # Enable experimental file type analyzers
       #additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
       #dependencyCheckVersion: '6.1.6'
     displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
