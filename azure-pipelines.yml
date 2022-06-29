@@ -62,7 +62,7 @@ jobs:
     #- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
     displayName: 'Show-[target] for debugging'
 
-  - pwsh: Get-ChildItem *.* -Recurse -Path (Build.ArtifactStagingDirectory | Select-Object UnixMode, Length, Name
+  - pwsh: Get-ChildItem *.* -Recurse -Path (Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
     displayName: 'Show-[appJar] for debugging'
 
   - task: PowerShell@2
