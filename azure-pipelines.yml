@@ -23,26 +23,26 @@ jobs:
       sonarQubeRunAnalysis: false
   
   - task: PowerShell@2
-    displayName: Print Build.SourcesDirectory
+    displayName: Print-[Build.SourcesDirectory]
     inputs:
       targetType: 'inline'
       script: 'Write-Host "Build.SourcesDirectory ---> [$(Build.SourcesDirectory)]"' # prints empty
   
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.SourcesDirectory) | Select-Object UnixMode, Length, Name
-    displayName: 'Show ALL [Build.SourcesDirectory] for debugging'
+    displayName: 'Show-[Build.SourcesDirectory] for debugging'
 
   - task: PowerShell@2
-    displayName: Print Pipeline.Workspace
+    displayName: Print-[Pipeline.Workspace]
     inputs:
       targetType: 'inline'
-      script: 'Write-Host "Build.SourcesDirectory ---> [$(Pipeline.Workspace)]"' # prints empty
+      script: 'Write-Host "Pipeline.Workspacey ---> [$(Pipeline.Workspace)]"' # prints empty
   
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
-    displayName: 'Show ALL [Pipeline.Workspace] for debugging'
+    displayName: 'Show-[Pipeline.Workspace] for debugging'
 
   - pwsh: Get-ChildItem *.* -Recurse -Path /home/vsts/work/1/target | Select-Object UnixMode, Length, Name
   #- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
-    displayName: 'Show folder [target] for debugging'
+    displayName: 'Show-[target] for debugging'
 
   - task: CopyFiles@2
     inputs:
@@ -51,14 +51,13 @@ jobs:
         **/target/spring-boot-kubernetes-*.jar
       targetFolder: '$(Build.ArtifactStagingDirectory)'
 
-  
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: appJar
       publishLocation: 'Container'
   - task: PowerShell@2
-    displayName: Print Build.ArtifactStagingDirectory
+    displayName: Print-[Build.ArtifactStagingDirectory]
     inputs:
       targetType: 'inline'
       script: 'Write-Host "Build.ArtifactStagingDirectory ---> [$(Build.ArtifactStagingDirectory)]"'
@@ -66,14 +65,14 @@ jobs:
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
     displayName: 'Show folder [Build.ArtifactStagingDirectory] for debugging'
 
-#- job: horusec
-#  workspace:
-#    clean: all
-#  displayName: Horusec
-#  steps:
-#    - script: |
-#        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
-#        horusec start -p ./src  
+- job: horusec
+  workspace:
+    clean: all
+  displayName: Horusec
+  steps:
+    - script: |
+        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
+        horusec start -p ./src  
               
 - job: sonar
   workspace:
@@ -100,53 +99,52 @@ jobs:
  # #    sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
  # #  displayName: 'Analyze current Branch'
 
- # - task: Maven@3    
- #   inputs:
- #     mavenPomFile: 'pom.xml'
- #     publishJUnitResults: true
- #     testResultsFiles: '**/surefire-reports/TEST-*.xml'
- #     javaHomeOption: 'JDKVersion'
- #     jdkVersionOption: '1.11'
- #     mavenVersionOption: 'Default'
- #     mavenAuthenticateFeed: false
- #     effectivePomSkip: false
- #     sonarQubeRunAnalysis: true
- #     sqMavenPluginVersionChoice: 'latest'
- #     checkStyleRunAnalysis: true
- #     pmdRunAnalysis: true
- #     findBugsRunAnalysis: true
+  - task: Maven@3    
+    inputs:
+      mavenPomFile: 'pom.xml'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.11'
+      mavenVersionOption: 'Default'
+      mavenAuthenticateFeed: false
+      effectivePomSkip: false
+      sonarQubeRunAnalysis: true
+      sqMavenPluginVersionChoice: 'latest'
+      checkStyleRunAnalysis: true
+      pmdRunAnalysis: true
+      findBugsRunAnalysis: true
 
- # - task: SonarCloudPublish@1
- #   inputs:
- #     pollingTimeoutSec: '300'
- #   displayName: 'Publish Analysis Results'
-
+  - task: SonarCloudPublish@1
+    inputs:
+      pollingTimeoutSec: '300'
+    displayName: 'Publish Analysis Results'
   - task: sonarcloud-buildbreaker@2
     inputs:
       SonarCloud: 'Custom-SonarServiceConnection'
       organization: 'famaturanai'
 
-#- job: sca
-#  steps:
-#  - task: dependency-check-build-task@6
-#    inputs:
-#      projectName: 'spring-boot-kubernetes'
-#      #scanPath: '$(Pipeline.Workspace)'
-#      #scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
-#      scanPath: '$(Build.SourcesDirectory)/**/*.*'
-#      failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
-#      format: 'HTML'
-#      enableVerbose: true
-#      enableExperimental: true # Enable experimental file type analyzers
-#      additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
-#      #dependencyCheckVersion: '6.1.6'
-#    displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
+- job: sca
+  steps:
+  - task: dependency-check-build-task@6
+    inputs:
+      projectName: 'spring-boot-kubernetes'
+      #scanPath: '$(Pipeline.Workspace)'
+      #scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
+      scanPath: '$(Build.ArtifactStagingDirectory)'
+      failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
+      format: 'HTML'
+      enableVerbose: true
+      enableExperimental: true # Enable experimental file type analyzers
+      #additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
+      #dependencyCheckVersion: '6.1.6'
+    displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
 
-  #- task: PublishTestResults@2
-  #  inputs:
-  #    testResultsFormat: 'JUnit'
-  #    testResultsFiles: 'dependency-check/*junit.xml'
-  #    searchFolder: '$(Common.TestResultsDirectory)'
-  #    testRunTitle: 'Dependency Check'
-  #    buildConfiguration: '$(BuildConfiguration)'
-  #  displayName: 'Publish OWASP Dependency Check security scan results'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: 'dependency-check/*junit.xml'
+      searchFolder: '$(Common.TestResultsDirectory)'
+      testRunTitle: 'Dependency Check'
+      buildConfiguration: '$(BuildConfiguration)'
+    displayName: 'Publish OWASP Dependency Check security scan results'
