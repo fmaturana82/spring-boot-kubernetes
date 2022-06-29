@@ -34,11 +34,6 @@ jobs:
       targetType: 'inline'
       script: 'Write-Host "Version of app ---> [$(Build.SourcesDirectory)]"' # prints empty
 
-  - task: PowerShell@2
-    displayName: Display SourcesDirectory
-    inputs:
-      script: 'Write-Host " $(Build.SourcesDirectory)' # prints empty
-
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
     displayName: 'Show folder contents for debugging'
       
@@ -108,27 +103,27 @@ jobs:
       SonarCloud: 'Custom-SonarServiceConnection'
       organization: 'famaturanai'
 
-- job: sca
-  steps:
-  - task: dependency-check-build-task@6
-    inputs:
-      projectName: 'spring-boot-kubernetes'
-      #scanPath: '$(Pipeline.Workspace)'
-      #scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
-      scanPath: '$(Build.SourcesDirectory)/**/*.*'
-      failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
-      format: 'HTML'
-      enableVerbose: true
-      enableExperimental: true # Enable experimental file type analyzers
-      additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
-      #dependencyCheckVersion: '6.1.6'
-    displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
+#- job: sca
+#  steps:
+#  - task: dependency-check-build-task@6
+#    inputs:
+#      projectName: 'spring-boot-kubernetes'
+#      #scanPath: '$(Pipeline.Workspace)'
+#      #scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
+#      scanPath: '$(Build.SourcesDirectory)/**/*.*'
+#      failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
+#      format: 'HTML'
+#      enableVerbose: true
+#      enableExperimental: true # Enable experimental file type analyzers
+#      additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
+#      #dependencyCheckVersion: '6.1.6'
+#    displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
 
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFormat: 'JUnit'
-      testResultsFiles: 'dependency-check/*junit.xml'
-      searchFolder: '$(Common.TestResultsDirectory)'
-      testRunTitle: 'Dependency Check'
-      buildConfiguration: '$(BuildConfiguration)'
-    displayName: 'Publish OWASP Dependency Check security scan results'
+  #- task: PublishTestResults@2
+  #  inputs:
+  #    testResultsFormat: 'JUnit'
+  #    testResultsFiles: 'dependency-check/*junit.xml'
+  #    searchFolder: '$(Common.TestResultsDirectory)'
+  #    testRunTitle: 'Dependency Check'
+  #    buildConfiguration: '$(BuildConfiguration)'
+  #  displayName: 'Publish OWASP Dependency Check security scan results'
