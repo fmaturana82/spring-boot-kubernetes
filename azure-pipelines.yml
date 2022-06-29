@@ -64,5 +64,5 @@ jobs:
 
   - task: sonarcloud-buildbreaker@2
     inputs:
-      SonarCloud: 'Sonarcloud'
-      organization: 'key-organization-sonarcloud'
+      SonarCloud: 'Custom-SonarServiceConnection'
+      organization: 'famaturanai'
