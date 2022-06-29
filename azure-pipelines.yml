@@ -41,7 +41,7 @@ jobs:
     inputs:
       SonarCloud: 'Custom-SonarServiceConnection'
       organization: 'key-organization-sonarcloud'
-      projectKey: 'famaturanai_devsecops-v3'
+      projectKey: 'famaturanai_spring-boot-kubernetes'
       projectName: 'spring-boot-kubernetes'
     displayName: 'Preparing Sonarqube Environment'
 
