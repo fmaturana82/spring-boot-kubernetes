@@ -12,6 +12,7 @@ jobs:
       mavenPomFile: 'pom.xml'
       #goals: 'package'
       publishJUnitResults: true
+      options: '--quiet'
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.11'
@@ -32,11 +33,13 @@ jobs:
     displayName: Display Build.SourcesDirectory
     inputs:
       targetType: 'inline'
-      script: 'Write-Host " ---> [$(Build.SourcesDirectory)]"' # prints empty
+      script: 'Write-Host "Build.SourcesDirectory ---> [$(Build.SourcesDirectory)]"' # prints empty
+  
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
     displayName: 'Show ALL folder for debugging'
-  #- pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace)/target | Select-Object UnixMode, Length, Name
-  - pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
+  
+  - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace)/target | Select-Object UnixMode, Length, Name
+  #- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
     displayName: 'Show folder [target] for debugging'
 
   - task: PublishBuildArtifacts@1
@@ -48,7 +51,8 @@ jobs:
     displayName: Display Build.ArtifactStagingDirectory
     inputs:
       targetType: 'inline'
-      script: 'Write-Host "---> [$(Build.ArtifactStagingDirectory)]"'
+      script: 'Write-Host "Build.ArtifactStagingDirectory ---> [$(Build.ArtifactStagingDirectory)]"'
+  
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
     displayName: 'Show folder [$(Build.ArtifactStagingDirectory] for debugging'
 
