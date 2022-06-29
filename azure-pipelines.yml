@@ -44,3 +44,10 @@ jobs:
       projectKey: 'famaturanai_devsecops-v3'
       projectName: 'devsecops-v3'
     displayName: 'Preparing Sonarqube Environment'
+
+  - task: SonarCloudAnalyze@1
+
+  - task: SonarCloudPublish@1
+    inputs:
+      pollingTimeoutSec: '300'
+    displayName: 'Publish Analysis Results'
