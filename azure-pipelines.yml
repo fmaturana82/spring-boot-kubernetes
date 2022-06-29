@@ -29,19 +29,28 @@ jobs:
       targetFolder: '$(Build.ArtifactStagingDirectory)'
 
   - task: PowerShell@2
-    displayName: Display SourcesDirectory
+    displayName: Display Build.SourcesDirectory
     inputs:
       targetType: 'inline'
-      script: 'Write-Host "Version of app ---> [$(Build.SourcesDirectory)]"' # prints empty
-
+      script: 'Write-Host " ---> [$(Build.SourcesDirectory)]"' # prints empty
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
-    displayName: 'Show folder contents for debugging'
-      
+    displayName: 'Show ALL folder for debugging'
+  #- pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace)/target | Select-Object UnixMode, Length, Name
+  - pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
+    displayName: 'Show folder [target] for debugging'
+
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: appJar
       publishLocation: 'Container'
+  - task: PowerShell@2
+    displayName: Display Build.ArtifactStagingDirectory
+    inputs:
+      targetType: 'inline'
+      script: 'Write-Host "---> [$(Build.ArtifactStagingDirectory)]"'
+  - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
+    displayName: 'Show folder [$(Build.ArtifactStagingDirectory] for debugging'
 
 - job: horusec
   workspace:
