@@ -4,68 +4,63 @@ trigger:
 pool:
   vmImage: Azure Pipelines
 
-stages:
-- stage: Build
-  jobs:
-  - job: build
-    displayName: 'Build'
-    steps:
-    - task: Maven@3
-      inputs:
-        mavenPomFile: 'pom.xml'
-        goals: 'build' # Optional
-        #options: # Optional
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml' # Required when publishJUnitResults == True
-        javaHomeOption: 'JDKVersion' # Options: jDKVersion, path
-        jdkVersionOption: '1.11' # Optional. Options: default, 1.14, 1.13, 1.12, 1.11, 1.10, 1.9, 1.8, 1.7, 1.6
-        jdkArchitectureOption: 'x64' # Optional. Options: x86, x64
-        mavenOptions: '-Xmx1024m' # Optional
-        sonarQubeRunAnalysis: false
-        sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
+jobs:
+- job: build
+  displayName: 'Build'
+  steps:
+  - task: Maven@3
+    inputs:
+      mavenPomFile: 'pom.xml'
+      goals: 'build'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.11'
+      jdkArchitectureOption: 'x64'
+      mavenOptions: '-Xmx1024m'
+      sonarQubeRunAnalysis: false
+      sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
 
-    - task: CopyFiles@2
-      inputs:
-        sourceFolder: '$(Build.SourcesDirectory)'
-        contents: |
-          **/build/libs/demo-devsecops-*.jar
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)'
+      contents: |
+        **/build/libs/spring-boot-kubernetes-*.jar
         targetFolder: '$(Build.ArtifactStagingDirectory)'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathToPublish: '$(Build.ArtifactStagingDirectory)'
-        artifactName: appJar
-        publishLocation: 'Container'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: appJar
+      publishLocation: 'Container'
 
-- stage: Test
-  jobs:
-    - job: sonar
-      workspace:
-        clean: all
-      displayName:  Code Review
-      steps:
-        - task: SonarCloudPrepare@1
-          inputs:
-            SonarCloud: 'Custom-SonarServiceConnection'
-            organization: 'organization-sonarcloud'
-            projectKey: 'key-organization-sonarcloud'
-            projectName: 'spring-boot-kubernetes'
-          displayName: 'Preparing Sonarqube Environment'
+- job: sonar
+  workspace:
+    clean: all
+  displayName:  Code Review
+  steps:
+  - task: SonarCloudPrepare@1
+    inputs:
+      SonarCloud: 'Custom-SonarServiceConnection'
+      organization: 'organization-sonarcloud'
+      projectKey: 'key-organization-sonarcloud'
+      projectName: 'spring-boot-kubernetes'
+      displayName: 'Preparing Sonarqube Environment'
 
-        - task: Maven@3
-          inputs:
-            mavenWrapperFile: 'mvnw'
-            tasks: "sonarqube"
-            javaHomeOption: 'JDKVersion'
-            sonarQubeRunAnalysis: true
-            sqGradlePluginVersionChoice: 'specify'
-            sonarQubeGradlePluginVersion: '3.3'
-          displayName: 'Analyze current Branch'
+  - task: Maven@3
+    inputs:
+      mavenWrapperFile: 'mvnw'
+      tasks: "sonarqube"
+      javaHomeOption: 'JDKVersion'
+      sonarQubeRunAnalysis: true
+      sqGradlePluginVersionChoice: 'specify'
+      sonarQubeGradlePluginVersion: '3.3'
+      displayName: 'Analyze current Branch'
 
-        - task: SonarCloudPublish@1
-          inputs:
-            pollingTimeoutSec: '300'
-          displayName: 'Publish Analysis Results'
+  - task: SonarCloudPublish@1
+    inputs:
+      pollingTimeoutSec: '300'
+      displayName: 'Publish Analysis Results'
 
     #- task: sonarcloud-buildbreaker@2
     #  inputs:
