@@ -35,7 +35,7 @@ jobs:
       artifactName: appJar
       publishLocation: 'Container'
 
-  - script: "mkdir -p build/libs; mv $(Pipeline.Workspace)/appJar/build/libs/ build/; chmod -R 555 build/libs"
+  - script: "mkdir -p target; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
     displayName:  Se mueve jar a carpeta raiz
 ##
 ##
