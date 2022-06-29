@@ -10,15 +10,19 @@ jobs:
   - task: Maven@3
     inputs:
       mavenPomFile: 'pom.xml'
-      goals: 'package'
+      #goals: 'package'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.11'
+      mavenVersionOption: 'Default'
       jdkArchitectureOption: 'x64'
       mavenOptions: '-Xmx1024m'
+      effectivePomSkip: false
       sonarQubeRunAnalysis: false
-      sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
+  
+  - powershell: '"Bucket name = Build.ArtifactStagingDirectory"'
+
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
@@ -26,6 +30,12 @@ jobs:
         **/build/libs/spring-boot-kubernetes-*.jar
       targetFolder: '$(Build.ArtifactStagingDirectory)'
 
+  - task: PowerShell@2
+    displayName: Display Build SourcesDirectory
+    inputs:
+      targetType: 'inline'
+      script: 'Write-Host "Version of app: $(Build.SourcesDirectory)"' # prints empty
+      
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
@@ -54,17 +64,33 @@ jobs:
       projectName: 'spring-boot-kubernetes'
     displayName: 'Preparing Sonarqube Environment'
 
-  - task: Maven@3
+  #- task: Maven@3
+  #  inputs:
+  #    mavenPomFile: 'pom.xml'
+  #    goals: 'package'
+  #    javaHomeOption: 'JDKVersion'
+  #    jdkVersionOption: '1.11'
+  #    jdkArchitectureOption: 'x64'
+  #    mavenOptions: '-Xmx1024m'
+  #    sonarQubeRunAnalysis: true
+  #    sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
+  #  displayName: 'Analyze current Branch'
+
+  - task: Maven@3    
     inputs:
       mavenPomFile: 'pom.xml'
-      goals: 'package'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.11'
-      jdkArchitectureOption: 'x64'
-      mavenOptions: '-Xmx1024m'
+      mavenVersionOption: 'Default'
+      mavenAuthenticateFeed: false
+      effectivePomSkip: false
       sonarQubeRunAnalysis: true
-      sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
-    displayName: 'Analyze current Branch'
+      sqMavenPluginVersionChoice: 'latest'
+      checkStyleRunAnalysis: true
+      pmdRunAnalysis: true
+      findBugsRunAnalysis: true
 
   - task: SonarCloudPublish@1
     inputs:
