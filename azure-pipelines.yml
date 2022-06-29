@@ -1,8 +1,7 @@
 trigger:
-- master
+  - master
 
-pool:
-  vmImage: Azure Pipelines
+pool: Azure Pipelines
 
 jobs:
 - job: build
@@ -11,7 +10,7 @@ jobs:
   - task: Maven@3
     inputs:
       mavenPomFile: 'pom.xml'
-      goals: 'build'
+      goals: 'package'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       javaHomeOption: 'JDKVersion'
@@ -20,20 +19,19 @@ jobs:
       mavenOptions: '-Xmx1024m'
       sonarQubeRunAnalysis: false
       sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
-
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
       contents: |
         **/build/libs/spring-boot-kubernetes-*.jar
-        targetFolder: '$(Build.ArtifactStagingDirectory)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
 
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: appJar
       publishLocation: 'Container'
-
+      
 - job: sonar
   workspace:
     clean: all
@@ -45,24 +43,4 @@ jobs:
       organization: 'key-organization-sonarcloud'
       projectKey: 'famaturanai_devsecops-v3'
       projectName: 'devsecops-v3'
-      displayName: 'Preparing Sonarqube Environment'
-
-  - task: Maven@3
-    inputs:
-      mavenWrapperFile: 'mvnw'
-      tasks: "sonarqube"
-      javaHomeOption: 'JDKVersion'
-      sonarQubeRunAnalysis: true
-      sqGradlePluginVersionChoice: 'specify'
-      sonarQubeGradlePluginVersion: '3.3'
-      displayName: 'Analyze current Branch'
-
-  - task: SonarCloudPublish@1
-    inputs:
-      pollingTimeoutSec: '300'
-      displayName: 'Publish Analysis Results'
-
-    #- task: sonarcloud-buildbreaker@2
-    #  inputs:
-    #    SonarCloud: 'Sonarcloud'
-    #    organization: 'devsecops-usach'
+    displayName: 'Preparing Sonarqube Environment'
