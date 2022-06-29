@@ -50,12 +50,15 @@ jobs:
       contents: |
         **/target/spring-boot-kubernetes-*.jar
       targetFolder: '$(Build.ArtifactStagingDirectory)'
-
   - task: PublishBuildArtifacts@1
     inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      pathToPublish: /run
       artifactName: appJar
-      publishLocation: 'Container'
+      #publishLocation: 'Container'
+
+  - pwsh: Get-ChildItem *.* -Recurse -Path (Build.ArtifactStagingDirectory | Select-Object UnixMode, Length, Name
+    displayName: 'Show-[appJar] for debugging'
+
   - task: PowerShell@2
     displayName: Print-[Build.ArtifactStagingDirectory]
     inputs:
@@ -65,14 +68,14 @@ jobs:
   - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
     displayName: 'Show folder [Build.ArtifactStagingDirectory] for debugging'
 
-- job: horusec
-  workspace:
-    clean: all
-  displayName: Horusec
-  steps:
-    - script: |
-        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
-        horusec start -p ./src  
+#- job: horusec
+#  workspace:
+#    clean: all
+#  displayName: Horusec
+#  steps:
+#    - script: |
+#        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
+#        horusec start -p ./src  
               
 - job: sonar
   workspace:
@@ -99,46 +102,46 @@ jobs:
  # #    sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
  # #  displayName: 'Analyze current Branch'
 
-  - task: Maven@3    
-    inputs:
-      mavenPomFile: 'pom.xml'
-      publishJUnitResults: true
-      testResultsFiles: '**/surefire-reports/TEST-*.xml'
-      javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '1.11'
-      mavenVersionOption: 'Default'
-      mavenAuthenticateFeed: false
-      effectivePomSkip: false
-      sonarQubeRunAnalysis: true
-      sqMavenPluginVersionChoice: 'latest'
-      checkStyleRunAnalysis: true
-      pmdRunAnalysis: true
-      findBugsRunAnalysis: true
+ # - task: Maven@3    
+ #   inputs:
+ #     mavenPomFile: 'pom.xml'
+ #     publishJUnitResults: true
+ #     testResultsFiles: '**/surefire-reports/TEST-*.xml'
+ #     javaHomeOption: 'JDKVersion'
+ #     jdkVersionOption: '1.11'
+ #     mavenVersionOption: 'Default'
+ #     mavenAuthenticateFeed: false
+ #     effectivePomSkip: false
+ #     sonarQubeRunAnalysis: true
+ #     sqMavenPluginVersionChoice: 'latest'
+ #     checkStyleRunAnalysis: true
+ #     pmdRunAnalysis: true
+ #     findBugsRunAnalysis: true
 
-  - task: SonarCloudPublish@1
-    inputs:
-      pollingTimeoutSec: '300'
-    displayName: 'Publish Analysis Results'
-  - task: sonarcloud-buildbreaker@2
-    inputs:
-      SonarCloud: 'Custom-SonarServiceConnection'
-      organization: 'famaturanai'
+  #- task: SonarCloudPublish@1
+  #  inputs:
+  #    pollingTimeoutSec: '300'
+  #  displayName: 'Publish Analysis Results'
+  #- task: sonarcloud-buildbreaker@2
+  #  inputs:
+  #    SonarCloud: 'Custom-SonarServiceConnection'
+  #    organization: 'famaturanai'
 
-- job: sca
-  steps:
-  - task: dependency-check-build-task@6
-    inputs:
-      projectName: 'spring-boot-kubernetes'
-      #scanPath: '$(Pipeline.Workspace)'
-      #scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
-      scanPath: '**/target/spring-boot-kubernetes-*.jar'
-      #failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
-      format: 'HTML'
-      enableVerbose: false
-      enableExperimental: true # Enable experimental file type analyzers
-      #additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
-      #dependencyCheckVersion: '6.1.6'
-    displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
+#- job: sca
+#  steps:
+#  - task: dependency-check-build-task@6
+#    inputs:
+#      projectName: 'spring-boot-kubernetes'
+#      #scanPath: '$(Pipeline.Workspace)'
+#      #scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
+#      scanPath: '**/target/spring-boot-kubernetes-*.jar'
+#      #failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
+#      format: 'HTML'
+#      enableVerbose: false
+#      enableExperimental: true # Enable experimental file type analyzers
+#      #additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
+#      #dependencyCheckVersion: '6.1.6'
+#    displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
 
  # - task: PublishTestResults@2
  #   inputs:
