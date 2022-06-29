@@ -10,7 +10,7 @@ jobs:
   - task: Maven@3
     inputs:
       mavenPomFile: 'pom.xml'
-      goals: 'build'
+      goals: 'package'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       javaHomeOption: 'JDKVersion'
@@ -31,3 +31,16 @@ jobs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: appJar
       publishLocation: 'Container'
+      
+- job: sonar
+  workspace:
+    clean: all
+  displayName:  Code Review
+  steps:
+  - task: SonarCloudPrepare@1
+    inputs:
+      SonarCloud: 'Custom-SonarServiceConnection'
+      organization: 'organization-sonarcloud'
+      projectKey: 'key-organization-sonarcloud'
+      projectName: 'spring-boot-kubernetes'
+    displayName: 'Preparing Sonarqube Environment'
