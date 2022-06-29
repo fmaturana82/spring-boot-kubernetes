@@ -1,8 +1,7 @@
 trigger:
-- master
+  - master
 
-pool:
-  vmImage: Azure Pipelines
+pool: Azure Pipelines
 
 jobs:
 - job: build
