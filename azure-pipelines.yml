@@ -105,12 +105,9 @@ stages:
     - task: dependency-check-build-task@6
       inputs:
         projectName: 'spring-boot-kubernetes'
-        ##scanPath: '$(Build.ArtifactStagingDirectory)'
-        ##scanPath: '/home/vsts/work/**/*.jar'
-        scanPath: '$(Build.ArtifactStagingDirectory)/**/*.jar'
-        ##scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
-        ##scanPath: 'spring-boot-kubernetes-*.jar'
-        failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
+        ##scanPath: '$(Build.ArtifactStagingDirectory)/**/*.jar'
+        scanPath: '/home/vsts/work/**/*.jar'
+        failOnCVSS: 0 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
         format: 'HTML'
         enableVerbose: false
         ##enableExperimental: true # Enable experimental file type analyzers
