@@ -62,6 +62,7 @@
 
 		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
 		<!--Vulnerabilities  -->
+		<!--
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-core</artifactId>
@@ -72,7 +73,7 @@
 			<artifactId>log4j-core</artifactId>
 			<version>2.13.0</version>
 		</dependency>
-
+	-->
 	</dependencies>
 
 
