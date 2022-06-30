@@ -41,7 +41,7 @@ stages:
     #- script: "get; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
     #  displayName:  Se mueve jar a carpeta raiz
 
-- stage: PrintVariables
+- stage: Variables
   jobs:
   - job: print
     displayName: 'Print'
@@ -170,10 +170,10 @@ stages:
     - task: PublishTestResults@2
       inputs:
         testResultsFormat: 'JUnit'
-        testResultsFiles: 'dependency-check/*junit.xml'
-        searchFolder: ${System.DefaultWorkingDirectory}'
+        testResultsFiles: 'dependency-check\*junit.xml'
+        searchFolder: ${Common.TestResultsDirectory} #$(System.DefaultWorkingDirectory)
         testRunTitle: 'Dependency Check'
-        buildConfiguration: '$(BuildConfiguration)'
-      displayName: 'Publish Test Results'
+        #buildConfiguration: '$(BuildConfiguration)'
+      displayName: 'Publish Dependency Check Test Results'
     
     
