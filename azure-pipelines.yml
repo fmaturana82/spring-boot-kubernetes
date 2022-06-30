@@ -24,6 +24,11 @@ stages:
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
 
+- stage: CopyFile
+  jobs:
+  - job: copyfile
+    displayName: 'CopyFile'
+    steps:
     - task: CopyFiles@2
       inputs:
         sourceFolder: '$(Build.SourcesDirectory)'
@@ -40,9 +45,21 @@ stages:
     #- script: "mkdir -p target; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
     #- script: "get; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
     #  displayName:  Se mueve jar a carpeta raiz
-##
-##
-##
+
+#- job: horusec
+#  workspace:
+#    clean: all
+#  displayName: Horusec
+#  steps:
+#    - script: |
+#        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
+#        horusec start -p ./src  
+
+- stage: PrintVar
+  jobs:
+  - job: print
+    displayName: 'Print'
+    steps:
     - task: PowerShell@2
       displayName: Print-[Build.SourcesDirectory]
       inputs:
@@ -79,17 +96,7 @@ stages:
     
     - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
       displayName: 'Show folder [Build.ArtifactStagingDirectory] for debugging'
-##
-##
-##
-#- job: horusec
-#  workspace:
-#    clean: all
-#  displayName: Horusec
-#  steps:
-#    - script: |
-#        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
-#        horusec start -p ./src  
+
 
 - stage: Test 
   jobs:            
@@ -143,7 +150,10 @@ stages:
         SonarCloud: 'Custom-SonarServiceConnection'
         organization: 'famaturanai'
 
+- stage: DependencyCheckBuild
+  jobs:
   - job: sca
+    displayName: 'DependencyCheckBuild'
     steps:
     - task: dependency-check-build-task@6
       inputs:
@@ -168,3 +178,5 @@ stages:
   #     testRunTitle: 'Dependency Check'
   #     buildConfiguration: '$(BuildConfiguration)'
   #   displayName: 'Publish OWASP Dependency Check security scan results'
+  
+  
