@@ -14,7 +14,7 @@ stages:
         mavenPomFile: 'pom.xml'
         goals: 'package' #'clean package -Dmaven.test.skip=true'
         publishJUnitResults: true
-        options: '–X' # --quiet
+        #options: '--quiet'
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
