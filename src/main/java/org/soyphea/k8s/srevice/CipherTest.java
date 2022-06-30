@@ -1,7 +1,5 @@
 package org.soyphea.k8s.srevice;
 
-import ch.qos.logback.core.db.dialect.MsSQLDialect;
-
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.NullCipher;
