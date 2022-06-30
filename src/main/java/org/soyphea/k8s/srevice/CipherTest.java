@@ -4,6 +4,8 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.NullCipher;
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -24,6 +26,7 @@ public class CipherTest {
         }
         catch(NoSuchAlgorithmException|NoSuchPaddingException e)   {
         }
+
     }
     private static DataSource dataSource;
     public List<Object> unsafeFindAccountsByCustomerId(String customerId) throws SQLException {
@@ -37,5 +40,20 @@ public class CipherTest {
         Connection c = dataSource.getConnection();
         ResultSet rs = c.createStatement().executeQuery(sql);
        return r;
+    }
+
+
+    void assign(String path, File jarFile) throws IOException {
+
+        File cert = new File(path, "Cert");
+        String password = "123";
+
+        File script = new File(path, "assign.bat");
+        String command = "\"" + script.getAbsolutePath() + "\" " + password
+                + " \"" + cert.getAbsolutePath() + "\""
+                + " \"" + jarFile.getAbsolutePath()     + "\"";
+
+        Process proc = new ProcessBuilder(command).start();
+
     }
 }
