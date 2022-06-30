@@ -170,13 +170,13 @@ stages:
         ##dependencyCheckVersion: '6.1.6'
       displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
 
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        searchFolder: ${Common.TestResultsDirectory} #$(System.DefaultWorkingDirectory)
-        testRunTitle: 'Dependency Check'
-        ##buildConfiguration: '$(BuildConfiguration)'
-      displayName: 'Publish Dependency Check Test Results'
+    #- task: PublishTestResults@2
+    #  inputs:
+    #    testResultsFormat: 'JUnit'
+    #    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    #    searchFolder: ${Common.TestResultsDirectory} #$(System.DefaultWorkingDirectory)
+    #    testRunTitle: 'Dependency Check'
+    #    ##buildConfiguration: '$(BuildConfiguration)'
+    #  displayName: 'Publish Dependency Check Test Results'
     
     
