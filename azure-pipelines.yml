@@ -41,14 +41,6 @@ stages:
     #- script: "get; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
     #  displayName:  Se mueve jar a carpeta raiz
 
-#- job: horusec
-#  workspace:
-#    clean: all
-#  displayName: Horusec
-#  steps:
-#    - script: |
-#        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
-#        horusec start -p ./src  
 
 - stage: PrintVar
   jobs:
@@ -92,6 +84,16 @@ stages:
     - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
       displayName: 'Show folder [Build.ArtifactStagingDirectory] for debugging'
 
+- stage: Horusec
+  jobs:
+  - job: horusec
+    workspace:
+      clean: all
+    displayName: Horusec
+    steps:
+      - script: |
+          curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
+          horusec start -p ./src  
 
 - stage: Test 
   jobs:            
