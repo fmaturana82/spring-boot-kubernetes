@@ -12,9 +12,9 @@ stages:
     - task: Maven@3
       inputs:
         mavenPomFile: 'pom.xml'
-        goals: 'clean package -Dmaven.test.skip=true'
+        goals: 'package' #  goals: 'clean package -Dmaven.test.skip=true'
         publishJUnitResults: true
-        options: '--quiet'
+        #options: '--quiet'
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
@@ -162,12 +162,13 @@ stages:
         scanPath: '/home/vsts/work/**/*.jar'
         #scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
         #scanPath: 'spring-boot-kubernetes-*.jar'
-        #failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
+        failOnCVSS: 0 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
         format: 'HTML'
         enableVerbose: false
         #enableExperimental: true # Enable experimental file type analyzers
         #additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
         #dependencyCheckVersion: '6.1.6'
+      
       displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
 
   # - task: PublishTestResults@2
