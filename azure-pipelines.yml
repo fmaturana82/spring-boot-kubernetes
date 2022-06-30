@@ -12,9 +12,9 @@ stages:
     - task: Maven@3
       inputs:
         mavenPomFile: 'pom.xml'
-        goals: 'package' #  goals: 'clean package -Dmaven.test.skip=true'
+        goals: 'package' #'clean package -Dmaven.test.skip=true'
         publishJUnitResults: true
-        #options: '--quiet'
+        options: '–X' # --quiet
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
