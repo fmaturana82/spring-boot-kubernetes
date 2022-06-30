@@ -97,6 +97,27 @@ stages:
           curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
           horusec start -p ./src  
 
+- stage: DependencyCheck
+  jobs:
+  - job: sca
+    displayName: 'DependencyCheckBuild'
+    steps:
+    - task: dependency-check-build-task@6
+      inputs:
+        projectName: 'spring-boot-kubernetes'
+        ##scanPath: '$(Build.ArtifactStagingDirectory)'
+        ##scanPath: '/home/vsts/work/**/*.jar'
+        scanPath: '$(Build.ArtifactStagingDirectory)/**/*.jar'
+        ##scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
+        ##scanPath: 'spring-boot-kubernetes-*.jar'
+        failOnCVSS: 0 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
+        format: 'HTML'
+        enableVerbose: false
+        ##enableExperimental: true # Enable experimental file type analyzers
+        ##additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
+        ##dependencyCheckVersion: '6.1.6'
+      displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
+
 - stage: Test 
   jobs:            
   - job: sonar
@@ -149,26 +170,6 @@ stages:
         SonarCloud: 'Custom-SonarServiceConnection'
         organization: 'famaturanai'
 
-- stage: DependencyCheck
-  jobs:
-  - job: sca
-    displayName: 'DependencyCheckBuild'
-    steps:
-    - task: dependency-check-build-task@6
-      inputs:
-        projectName: 'spring-boot-kubernetes'
-        ##scanPath: '$(Build.ArtifactStagingDirectory)'
-        ##scanPath: '/home/vsts/work/**/*.jar'
-        scanPath: '$(Build.ArtifactStagingDirectory)/**/*.jar'
-        ##scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
-        ##scanPath: 'spring-boot-kubernetes-*.jar'
-        failOnCVSS: 0 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
-        format: 'HTML'
-        enableVerbose: false
-        ##enableExperimental: true # Enable experimental file type analyzers
-        ##additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
-        ##dependencyCheckVersion: '6.1.6'
-      displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
 
     #- task: PublishTestResults@2
     #  inputs:
@@ -180,3 +181,13 @@ stages:
     #  displayName: 'Publish Dependency Check Test Results'
     
     
+- stage: End
+  jobs:
+  - job: print
+    displayName: 'Print'
+    steps:
+    - task: PowerShell@2
+      displayName: message
+      inputs:
+        targetType: 'inline'
+        script: 'Write-Host "Executed successfully"'
