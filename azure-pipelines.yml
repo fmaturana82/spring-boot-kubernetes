@@ -23,12 +23,7 @@ stages:
         mavenOptions: '-Xmx1024m'
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
-
-- stage: CopyFile
-  jobs:
-  - job: copyfile
-    displayName: 'CopyFile'
-    steps:
+    
     - task: CopyFiles@2
       inputs:
         sourceFolder: '$(Build.SourcesDirectory)'
