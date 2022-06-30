@@ -64,6 +64,9 @@ stages:
     - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
       displayName: 'Show-[Pipeline.Workspace] for debugging'
 
+    - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace)/TestResults | Select-Object UnixMode, Length, Name
+      displayName: 'Show-[TestResults] for debugging'
+
     #- pwsh: Get-ChildItem *.* -Recurse -Path /home/vsts/work/1/target | Select-Object UnixMode, Length, Name
     ##- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
     #  displayName: 'Show-[target] for debugging'
@@ -154,26 +157,26 @@ stages:
     - task: dependency-check-build-task@6
       inputs:
         projectName: 'spring-boot-kubernetes'
-        #scanPath: '$(Build.ArtifactStagingDirectory)'
-        #scanPath: '/home/vsts/work/**/*.jar'
+        ##scanPath: '$(Build.ArtifactStagingDirectory)'
+        ##scanPath: '/home/vsts/work/**/*.jar'
         scanPath: '$(Build.ArtifactStagingDirectory)/**/*.jar'
-        #scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
-        #scanPath: 'spring-boot-kubernetes-*.jar'
+        ##scanPath: ' **/build/libs/spring-boot-kubernetes-*.jar'
+        ##scanPath: 'spring-boot-kubernetes-*.jar'
         failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
         format: 'HTML'
         enableVerbose: false
-        #enableExperimental: true # Enable experimental file type analyzers
-        #additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
-        #dependencyCheckVersion: '6.1.6'
+        ##enableExperimental: true # Enable experimental file type analyzers
+        ##additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
+        ##dependencyCheckVersion: '6.1.6'
       displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
 
     - task: PublishTestResults@2
       inputs:
         testResultsFormat: 'JUnit'
-        testResultsFiles: 'dependency-check\*junit.xml'
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
         searchFolder: ${Common.TestResultsDirectory} #$(System.DefaultWorkingDirectory)
         testRunTitle: 'Dependency Check'
-        #buildConfiguration: '$(BuildConfiguration)'
+        ##buildConfiguration: '$(BuildConfiguration)'
       displayName: 'Publish Dependency Check Test Results'
     
     
