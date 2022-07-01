@@ -52,31 +52,31 @@ stages:
     #- script: "get; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
     #  displayName:  Se mueve jar a carpeta raiz
 
-- stage: Variables
-  jobs:
-  - job: print
-    displayName: 'Print'
-    steps:
-    - task: PowerShell@2
-      displayName: Print-[Build.SourcesDirectory]
-      inputs:
-        targetType: 'inline'
-        script: 'Write-Host "Build.SourcesDirectory ---> [$(Build.SourcesDirectory)]"'
-
-    - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.SourcesDirectory) | Select-Object UnixMode, Length, Name
-      displayName: 'Show-[Build.SourcesDirectory] for debugging'
-
-    - task: PowerShell@2
-      displayName: Print-[Pipeline.Workspace]
-      inputs:
-        targetType: 'inline'
-        script: 'Write-Host "Pipeline.Workspacey ---> [$(Pipeline.Workspace)]"'
-
-    - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
-      displayName: 'Show-[Pipeline.Workspace] for debugging'
-
-    - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace)/TestResults | Select-Object UnixMode, Length, Name
-      displayName: 'Show-[TestResults] for debugging'
+#- stage: Variables
+#  jobs:
+#  - job: print
+#    displayName: 'Print'
+#    steps:
+#    - task: PowerShell@2
+#      displayName: Print-[Build.SourcesDirectory]
+#      inputs:
+#        targetType: 'inline'
+#        script: 'Write-Host "Build.SourcesDirectory ---> [$(Build.SourcesDirectory)]"'
+#
+#    - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.SourcesDirectory) | Select-Object UnixMode, Length, Name
+#      displayName: 'Show-[Build.SourcesDirectory] for debugging'
+#
+#    - task: PowerShell@2
+#      displayName: Print-[Pipeline.Workspace]
+#      inputs:
+#        targetType: 'inline'
+#        script: 'Write-Host "Pipeline.Workspacey ---> [$(Pipeline.Workspace)]"'
+#
+#    - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
+#      displayName: 'Show-[Pipeline.Workspace] for debugging'
+#
+#    - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace)/TestResults | Select-Object UnixMode, Length, Name
+#      displayName: 'Show-[TestResults] for debugging'
 
     #- pwsh: Get-ChildItem *.* -Recurse -Path /home/vsts/work/1/target | Select-Object UnixMode, Length, Name
     ##- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
@@ -88,14 +88,14 @@ stages:
     #- pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory)/target | Select-Object UnixMode, Length, Name
     #  displayName: 'Show2-[appJar] for debugging'
 
-    - task: PowerShell@2
-      displayName: Print-[Build.ArtifactStagingDirectory]
-      inputs:
-        targetType: 'inline'
-        script: 'Write-Host "Build.ArtifactStagingDirectory ---> [$(Build.ArtifactStagingDirectory)]"'
-    
-    - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
-      displayName: 'Show folder [Build.ArtifactStagingDirectory] for debugging'
+#    - task: PowerShell@2
+#      displayName: Print-[Build.ArtifactStagingDirectory]
+#      inputs:
+#        targetType: 'inline'
+#        script: 'Write-Host "Build.ArtifactStagingDirectory ---> [$(Build.ArtifactStagingDirectory)]"'
+#    
+#    - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
+#      displayName: 'Show folder [Build.ArtifactStagingDirectory] for debugging'
 
 #- stage: Horusec
 #  jobs:
@@ -157,8 +157,7 @@ stages:
       inputs:
         mavenPomFile: 'pom.xml'
         publishJUnitResults: true
-        #testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        testResultsFiles: '**/TEST-*.xml'
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
