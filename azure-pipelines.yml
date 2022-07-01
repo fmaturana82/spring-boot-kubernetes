@@ -13,14 +13,14 @@ stages:
       inputs:
         mavenPomFile: 'pom.xml'
         goals: 'package' #'clean package -Dmaven.test.skip=true'
-        #publishJUnitResults: true
+        publishJUnitResults: true
         #options: '--quiet'
-        #testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
-        jdkArchitectureOption: 'x64'
-        mavenOptions: '-Xmx1024m'
+        #jdkArchitectureOption: 'x64'
+        #mavenOptions: '-Xmx1024m'
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
     
@@ -145,12 +145,12 @@ stages:
     - task: Maven@3    
       inputs:
         mavenPomFile: 'pom.xml'
-        #publishJUnitResults: true
+        #publishJUnitResults: false
         #testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
-        mavenAuthenticateFeed: false
+        #mavenAuthenticateFeed: false
         effectivePomSkip: false
         sonarQubeRunAnalysis: true
         sqMavenPluginVersionChoice: 'latest'
