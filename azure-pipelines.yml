@@ -12,15 +12,16 @@ stages:
     - task: Maven@3
       inputs:
         mavenPomFile: 'pom.xml'
-        goals: 'package' #'clean package -Dmaven.test.skip=true'
+        #goals: 'package'
+        goals: 'clean package -Dmaven.test.skip=false | grep -v warning'
         publishJUnitResults: true
         #options: '--quiet'
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
-        jdkArchitectureOption: 'x64'
-        mavenOptions: '-Xmx1024m'
+        #jdkArchitectureOption: 'x64'
+        #mavenOptions: '-Xmx1024m'
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
     
