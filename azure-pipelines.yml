@@ -19,8 +19,8 @@ stages:
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
-        #jdkArchitectureOption: 'x64'
-        #mavenOptions: '-Xmx1024m'
+        jdkArchitectureOption: 'x64'
+        mavenOptions: '-Xmx1024m'
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
     
@@ -41,31 +41,31 @@ stages:
     #- script: "get; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
     #  displayName:  Se mueve jar a carpeta raiz
 
-#- stage: Variables
-#  jobs:
-#  - job: print
-#    displayName: 'Print'
-#    steps:
-#    - task: PowerShell@2
-#      displayName: Print-[Build.SourcesDirectory]
-#      inputs:
-#        targetType: 'inline'
-#        script: 'Write-Host "Build.SourcesDirectory ---> [$(Build.SourcesDirectory)]"'
+- stage: Variables
+  jobs:
+  - job: print
+    displayName: 'Print'
+    steps:
+    - task: PowerShell@2
+      displayName: Print-[Build.SourcesDirectory]
+      inputs:
+        targetType: 'inline'
+        script: 'Write-Host "Build.SourcesDirectory ---> [$(Build.SourcesDirectory)]"'
 
-#    - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.SourcesDirectory) | Select-Object UnixMode, Length, Name
-#      displayName: 'Show-[Build.SourcesDirectory] for debugging'
+    - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.SourcesDirectory) | Select-Object UnixMode, Length, Name
+      displayName: 'Show-[Build.SourcesDirectory] for debugging'
 
-#    - task: PowerShell@2
-#      displayName: Print-[Pipeline.Workspace]
-#      inputs:
-#        targetType: 'inline'
-#        script: 'Write-Host "Pipeline.Workspacey ---> [$(Pipeline.Workspace)]"'
+    - task: PowerShell@2
+      displayName: Print-[Pipeline.Workspace]
+      inputs:
+        targetType: 'inline'
+        script: 'Write-Host "Pipeline.Workspacey ---> [$(Pipeline.Workspace)]"'
 
-#    - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
-#      displayName: 'Show-[Pipeline.Workspace] for debugging'
+    - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace) | Select-Object UnixMode, Length, Name
+      displayName: 'Show-[Pipeline.Workspace] for debugging'
 
-#    - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace)/TestResults | Select-Object UnixMode, Length, Name
-#      displayName: 'Show-[TestResults] for debugging'
+    - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace)/TestResults | Select-Object UnixMode, Length, Name
+      displayName: 'Show-[TestResults] for debugging'
 
     #- pwsh: Get-ChildItem *.* -Recurse -Path /home/vsts/work/1/target | Select-Object UnixMode, Length, Name
     ##- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
@@ -77,43 +77,43 @@ stages:
     #- pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory)/target | Select-Object UnixMode, Length, Name
     #  displayName: 'Show2-[appJar] for debugging'
 
-#    - task: PowerShell@2
-#      displayName: Print-[Build.ArtifactStagingDirectory]
-#      inputs:
-#        targetType: 'inline'
-#        script: 'Write-Host "Build.ArtifactStagingDirectory ---> [$(Build.ArtifactStagingDirectory)]"'
+    - task: PowerShell@2
+      displayName: Print-[Build.ArtifactStagingDirectory]
+      inputs:
+        targetType: 'inline'
+        script: 'Write-Host "Build.ArtifactStagingDirectory ---> [$(Build.ArtifactStagingDirectory)]"'
     
-#    - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
-#      displayName: 'Show folder [Build.ArtifactStagingDirectory] for debugging'
+    - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
+      displayName: 'Show folder [Build.ArtifactStagingDirectory] for debugging'
 
-#- stage: Horusec
-#  jobs:
-#  - job: horusec
-#    workspace:
-#      clean: all
-#    displayName: Horusec
-#    steps:
-#      - script: |
-#          curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
-#          horusec start -p ./src  
+- stage: Horusec
+  jobs:
+  - job: horusec
+    workspace:
+      clean: all
+    displayName: Horusec
+    steps:
+      - script: |
+          curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
+          horusec start -p ./src  
 
-#- stage: DependencyCheck
-#  jobs:
-#  - job: sca
-#    displayName: 'DependencyCheckBuild'
-#    steps:
-#    - task: dependency-check-build-task@6
-#      inputs:
-#        projectName: 'spring-boot-kubernetes'
-#        ##scanPath: '$(Build.ArtifactStagingDirectory)/**/*.jar'
-#        scanPath: '/home/vsts/work/**/*.jar'
-#        failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
-#        format: 'HTML'
-#        enableVerbose: false
-#        ##enableExperimental: true # Enable experimental file type analyzers
-#        ##additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
-#        ##dependencyCheckVersion: '6.1.6'
-#      displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
+- stage: DependencyCheck
+  jobs:
+  - job: sca
+    displayName: 'DependencyCheckBuild'
+    steps:
+    - task: dependency-check-build-task@6
+      inputs:
+        projectName: 'spring-boot-kubernetes'
+        ##scanPath: '$(Build.ArtifactStagingDirectory)/**/*.jar'
+        scanPath: '/home/vsts/work/**/*.jar'
+        failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
+        format: 'HTML'
+        enableVerbose: false
+        ##enableExperimental: true # Enable experimental file type analyzers
+        ##additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
+        ##dependencyCheckVersion: '6.1.6'
+      displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
 
 - stage: Test 
   jobs:            
@@ -145,12 +145,12 @@ stages:
     - task: Maven@3    
       inputs:
         mavenPomFile: 'pom.xml'
-        #publishJUnitResults: false
-        #testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
-        #mavenAuthenticateFeed: false
+        mavenAuthenticateFeed: false
         effectivePomSkip: false
         sonarQubeRunAnalysis: true
         sqMavenPluginVersionChoice: 'latest'
