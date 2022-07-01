@@ -18,7 +18,7 @@ stages:
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
-        jdkArchitectureOption: 'x64'
+        jdkArchitectureOption: 'x86'
         mavenOptions: '-Xmx1024m'
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
