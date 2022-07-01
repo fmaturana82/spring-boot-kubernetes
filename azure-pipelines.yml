@@ -97,16 +97,16 @@ stages:
     - pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
       displayName: 'Show folder [Build.ArtifactStagingDirectory] for debugging'
 
-- stage: Horusec
-  jobs:
-  - job: horusec
-    workspace:
-      clean: all
-    displayName: Horusec
-    steps:
-      - script: |
-          curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
-          horusec start -p ./src  
+#- stage: Horusec
+#  jobs:
+#  - job: horusec
+#    workspace:
+#      clean: all
+#    displayName: Horusec
+#    steps:
+#      - script: |
+#          curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
+#          horusec start -p ./src  
 
 #- stage: DependencyCheck
 #  jobs:
@@ -157,7 +157,8 @@ stages:
       inputs:
         mavenPomFile: 'pom.xml'
         publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        #testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        testResultsFiles: '**/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
