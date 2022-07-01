@@ -12,16 +12,14 @@ stages:
     - task: Maven@3
       inputs:
         mavenPomFile: 'pom.xml'
-        #goals: 'package'
-        goals: 'clean package -Dmaven.test.skip=false | grep -v warning'
+        goals: 'package'
         publishJUnitResults: true
-        #options: '--quiet'
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
-        #jdkArchitectureOption: 'x64'
-        #mavenOptions: '-Xmx1024m'
+        jdkArchitectureOption: 'x64'
+        mavenOptions: '-Xmx1024m'
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
     
@@ -37,10 +35,6 @@ stages:
         pathToPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: app
         publishLocation: 'Container'
-
-    #- script: "mkdir -p target; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
-    #- script: "get; mv $(Pipeline.Workspace)/appJar/target/ target/; chmod -R 555 target"
-    #  displayName:  Se mueve jar a carpeta raiz
 
 - stage: Variables
   jobs:
@@ -67,16 +61,6 @@ stages:
 
     - pwsh: Get-ChildItem *.* -Recurse -Path $(Pipeline.Workspace)/TestResults | Select-Object UnixMode, Length, Name
       displayName: 'Show-[TestResults] for debugging'
-
-    #- pwsh: Get-ChildItem *.* -Recurse -Path /home/vsts/work/1/target | Select-Object UnixMode, Length, Name
-    ##- pwsh: Get-ChildItem -Path $(Pipeline.Workspace)/target -Recurse -Directory | Where-Object {$_.GetFiles().Count -eq 0}
-    #  displayName: 'Show-[target] for debugging'
-
-    #- pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory) | Select-Object UnixMode, Length, Name
-    #  displayName: 'Show1-[appJar] for debugging'
-
-    #- pwsh: Get-ChildItem *.* -Recurse -Path $(Build.ArtifactStagingDirectory)/target | Select-Object UnixMode, Length, Name
-    #  displayName: 'Show2-[appJar] for debugging'
 
     - task: PowerShell@2
       displayName: Print-[Build.ArtifactStagingDirectory]
@@ -114,34 +98,22 @@ stages:
         ##enableExperimental: true # Enable experimental file type analyzers
         ##additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
         ##dependencyCheckVersion: '6.1.6'
-      displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
+      displayName: 'OWASP Dependency Check scan of third-party dependencies'
 
 - stage: Test 
   jobs:            
   - job: sonar
     workspace:
       clean: all
-    displayName:  Code Review
+    displayName: Code Review
     steps:
     - task: SonarCloudPrepare@1
       inputs:
         SonarCloud: 'Custom-SonarServiceConnection'
-        organization: 'famaturanai'
-        projectKey: 'famaturanai_spring-boot-kubernetes'
+        organization: 'orgDevops'
+        projectKey: 'orgDevops_spring-boot-kubernetes'
         projectName: 'spring-boot-kubernetes'
       displayName: 'Preparing Sonarqube Environment'
-
-  # #- task: Maven@3
-  # #  inputs:
-  # #    mavenPomFile: 'pom.xml'
-  # #    goals: 'package'
-  # #    javaHomeOption: 'JDKVersion'
-  # #    jdkVersionOption: '1.11'
-  # #    jdkArchitectureOption: 'x64'
-  # #    mavenOptions: '-Xmx1024m'
-  # #    sonarQubeRunAnalysis: true
-  # #    sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
-  # #  displayName: 'Analyze current Branch'
 
     - task: Maven@3    
       inputs:
@@ -166,19 +138,8 @@ stages:
     - task: sonarcloud-buildbreaker@2
       inputs:
         SonarCloud: 'Custom-SonarServiceConnection'
-        organization: 'famaturanai'
+        organization: 'orgDevops'
 
-
-    #- task: PublishTestResults@2
-    #  inputs:
-    #    testResultsFormat: 'JUnit'
-    #    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    #    searchFolder: ${Common.TestResultsDirectory} #$(System.DefaultWorkingDirectory)
-    #    testRunTitle: 'Dependency Check'
-    #    ##buildConfiguration: '$(BuildConfiguration)'
-    #  displayName: 'Publish Dependency Check Test Results'
-    
-    
 - stage: End
   jobs:
   - job: print
