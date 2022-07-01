@@ -13,9 +13,9 @@ stages:
       inputs:
         mavenPomFile: 'pom.xml'
         goals: 'package' #'clean package -Dmaven.test.skip=true'
-        publishJUnitResults: true
+        #publishJUnitResults: true
         #options: '--quiet'
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        #testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
@@ -145,8 +145,8 @@ stages:
     - task: Maven@3    
       inputs:
         mavenPomFile: 'pom.xml'
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        #publishJUnitResults: true
+        #testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
