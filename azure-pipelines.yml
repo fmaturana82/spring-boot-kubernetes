@@ -4,6 +4,17 @@ trigger:
 pool: Azure Pipelines
 
 stages:
+- stage: Start
+  jobs:
+  - job: start
+    displayName: 'start'
+    steps:
+    - task: PowerShell@2
+      displayName: message
+      inputs:
+        targetType: 'inline'
+        script: 'Write-Host "Starting"'
+
 - stage: Build 
   jobs:
   - job: build
@@ -97,23 +108,23 @@ stages:
           curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
           horusec start -p ./src  
 
-- stage: DependencyCheck
-  jobs:
-  - job: sca
-    displayName: 'DependencyCheckBuild'
-    steps:
-    - task: dependency-check-build-task@6
-      inputs:
-        projectName: 'spring-boot-kubernetes'
-        ##scanPath: '$(Build.ArtifactStagingDirectory)/**/*.jar'
-        scanPath: '/home/vsts/work/**/*.jar'
-        failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
-        format: 'HTML'
-        enableVerbose: false
-        ##enableExperimental: true # Enable experimental file type analyzers
-        ##additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
-        ##dependencyCheckVersion: '6.1.6'
-      displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
+#- stage: DependencyCheck
+#  jobs:
+#  - job: sca
+#    displayName: 'DependencyCheckBuild'
+#    steps:
+#    - task: dependency-check-build-task@6
+#      inputs:
+#        projectName: 'spring-boot-kubernetes'
+#        ##scanPath: '$(Build.ArtifactStagingDirectory)/**/*.jar'
+#        scanPath: '/home/vsts/work/**/*.jar'
+#        failOnCVSS: 8 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
+#        format: 'HTML'
+#        enableVerbose: false
+#        ##enableExperimental: true # Enable experimental file type analyzers
+#        ##additionalArguments: '--scan $(Pipeline.Workspace)/**/*.*' # Additional folder to scan
+#        ##dependencyCheckVersion: '6.1.6'
+#      displayName: 'OWASP Dependency Check scan of third-party dependencies' # This task will perform security scan of third-party dependencies
 
 - stage: Test 
   jobs:            
@@ -130,17 +141,17 @@ stages:
         projectName: 'spring-boot-kubernetes'
       displayName: 'Preparing Sonarqube Environment'
 
-  # #- task: Maven@3
-  # #  inputs:
-  # #    mavenPomFile: 'pom.xml'
-  # #    goals: 'package'
-  # #    javaHomeOption: 'JDKVersion'
-  # #    jdkVersionOption: '1.11'
-  # #    jdkArchitectureOption: 'x64'
-  # #    mavenOptions: '-Xmx1024m'
-  # #    sonarQubeRunAnalysis: true
-  # #    sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
-  # #  displayName: 'Analyze current Branch'
+   ##- task: Maven@3
+   ##  inputs:
+   ##    mavenPomFile: 'pom.xml'
+   ##    goals: 'package'
+   ##    javaHomeOption: 'JDKVersion'
+   ##    jdkVersionOption: '1.11'
+   ##    jdkArchitectureOption: 'x64'
+   ##    mavenOptions: '-Xmx1024m'
+   ##    sonarQubeRunAnalysis: true
+   ##    sqMavenPluginVersionChoice: 'latest' # Required when sonarQubeRunAnalysis == True# Options: latest, pom
+   ##  displayName: 'Analyze current Branch'
 
     - task: Maven@3    
       inputs:
