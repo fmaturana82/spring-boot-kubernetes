@@ -47,7 +47,7 @@ stages:
         projectName: 'spring-boot-kubernetes'
         ##scanPath: '$(Build.ArtifactStagingDirectory)/**/*.jar'
         scanPath: '/home/vsts/work/**/*.jar'
-        failOnCVSS: 0 # Fail the build if vulnerabilities with CVSS score higher than 8 are discovered
+        failOnCVSS: 7 # Fail the build if vulnerabilities with CVSS score 7.0-8.9 (High)
         format: 'HTML'
         enableVerbose: false
         ##enableExperimental: true # Enable experimental file type analyzers
